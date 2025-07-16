@@ -15,7 +15,7 @@ const LandingPage = () => {
       ></div>
 
       {/* Optional overlay to darken image for contrast */}
-      <div className="absolute inset-0 bg-white opacity-30 filter-gray-50 z-0"></div>
+      <div className="absolute inset-0 bg-white opacity-60 filter-gray-50 z-0"></div>
 
       {/* Red Header Bar - always on top */}
       <header className="relative z-20 bg-red-600 text-white p-4 flex justify-between items-center shadow-md">
@@ -23,8 +23,8 @@ const LandingPage = () => {
       </header>
 
       {/* Centered Content */}
-      <main className="flex-1 z-10 flex flex-col items-center justify-center text-center px-4 py-32">
-        <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-semibold mb-8">
+      <main className="flex-1 z-10 flex flex-col items-center justify-center text-center px-4 py-24">
+        <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-semibold mb-8 mt-[-130px]">
           Good Day! How may I assist you?
         </h2>
 
