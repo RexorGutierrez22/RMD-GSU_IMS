@@ -1,6 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col bg-gray- relative overflow-hidden">
       {/* Background image full-screen */}
@@ -14,15 +19,13 @@ const LandingPage = () => {
         }}
       ></div>
 
-      {/* Optional overlay to darken image for contrast */}
-      <div className="absolute inset-0 bg-white opacity-60 filter-gray-50 z-0"></div>
+      {/* Optional overlay */}
+      <div className="absolute inset-0 bg-white opacity-60 z-0"></div>
 
-      {/* Red Header Bar - always on top */}
-      <header className="relative z-20 bg-red-600 text-white p-4 flex justify-between items-center shadow-md">
-        <h1 className="text-xl sm:text-2xl font-bold">Dashboard</h1>
-      </header>
+      {/* Global Header */}
+      <Header />
 
-      {/* Centered Content */}
+      {/* Main Content */}
       <main className="flex-1 z-10 flex flex-col items-center justify-center text-center px-4 py-24">
         <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-semibold mb-8 mt-[-130px]">
           Good Day! How may I assist you?
@@ -31,14 +34,14 @@ const LandingPage = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <button className="main-btn">Borrow/Request</button>
           <button className="main-btn">Return an Item</button>
-          <button className="main-btn">Register</button>
+          <button className="main-btn" onClick={() => navigate('/register')}>
+            Register
+          </button>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-red-600 text-white p-4 text-center z-10">
-        © 2025 CIC INTERNS
-      </footer>
+      {/* Global Footer */}
+      <Footer />
     </div>
   );
 };
