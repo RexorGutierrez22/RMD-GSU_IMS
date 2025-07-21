@@ -94,7 +94,6 @@ Also update `config/cors.php`:
 
 ---
 
-## 🤝 Contributing
+PLEASE FOLLOW AND READ LANG NINYO NI GOIS !
 
-Feel free to open issues, make PRs, or test features in isolation before pushing to the main repository.
 
