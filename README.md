@@ -3,7 +3,7 @@
 This is a **Dockerized test setup** for the Resource Management Division Inventory System. It includes:
 
 - Laravel API backend (`rmd-inventory-backend/`)
-- React Vite frontend (`frontend/`)
+- React Vite frontend (`md-inventory-frontend/`)
 - MySQL database
 - Docker-based development environment
 
