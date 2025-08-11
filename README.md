@@ -14,7 +14,7 @@ This is a **Dockerized test setup** for the Resource Management Division Invento
 ### 1. 📥 Clone this repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/rmd-inventory-docker-test.git
+git clone https://github.com/RexorGutierrez22/RMD-GSU_IMS.git
 cd rmd-inventory-docker-test
 ```
 
