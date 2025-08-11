@@ -18,8 +18,6 @@ git clone https://github.com/YOUR_USERNAME/rmd-inventory-docker-test.git
 cd rmd-inventory-docker-test
 ```
 
-> Replace `YOUR_USERNAME` with your GitHub username.
-
 ---
 
 ### 2. ⚛️ Create the React Frontend (First-Time Only)
