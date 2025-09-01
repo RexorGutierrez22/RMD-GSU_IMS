@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = ({ title = 'Dashboard', rightContent = null }) => {
+const Header = ({ title = 'Resource Management Division', rightContent = null }) => {
   return (
     <header className="relative z-20 shadow-md" style={{ backgroundColor: '#BA2C2C' }}>
       <div className="mx-auto w-full max-w-7xl h-7 px-2 sm:px-4 flex flex-wrap items-center justify-between gap-2">

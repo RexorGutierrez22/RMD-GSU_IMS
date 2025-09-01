@@ -14,24 +14,24 @@ const LandingPage = () => {
         style={{
           backgroundImage: 'url("/dashboard.png")',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat',
         }}
       ></div>
 
       {/* Optional overlay */}
-      <div className="absolute inset-0 bg-white opacity-60 z-0"></div>
+      <div className="absolute inset-0 bg-white opacity-10 z-0"></div>
 
       {/* Global Header */}
       <Header />
 
       {/* Main Content */}
-      <main className="flex-1 z-10 flex flex-col items-center justify-center text-center px-4 py-8 sm:py-12 md:py-16 lg:py-24">
-        <h2 className="text-black text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold mb-6 sm:mb-8 px-4">
+      <main className="flex-1 z-10 flex flex-col items-center justify-center text-center px-4 py-24">
+        <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-semibold mb-8 mt-[-130px]">
           Good Day! How may I assist you?
         </h2>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 px-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <button className="main-btn">Borrow/Request</button>
           <button className="main-btn">Return an Item</button>
           <button className="main-btn" onClick={() => navigate('/register')}>
