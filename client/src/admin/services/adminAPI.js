@@ -53,6 +53,18 @@ export const adminAuth = {
     return !!localStorage.getItem('admin_token');
   },
 
+  // Verify token with backend
+  verifyToken: async () => {
+    try {
+      const response = await adminAPI.get('/admin/verify');
+      return response.data;
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      localStorage.removeItem('admin_token');
+      throw error;
+    }
+  },
+
   // Get admin token
   getToken: () => {
     return localStorage.getItem('admin_token');

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { adminAuth } from '../services/adminAPI.js';
 
 const AdminLogin = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [form, setForm] = useState({
 		username: '',
 		password: ''
@@ -11,6 +12,26 @@ const AdminLogin = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
+
+	// Check if user is already authenticated
+	useEffect(() => {
+		const checkAuth = async () => {
+			if (adminAuth.isAuthenticated()) {
+				// Try to verify the token
+				try {
+					await adminAuth.verifyToken();
+					// Redirect to intended page or dashboard
+					const from = location.state?.from?.pathname || '/admin-dashboard';
+					navigate(from, { replace: true });
+				} catch (error) {
+					console.error('Token verification failed:', error);
+					// Token is invalid, it's already removed by verifyToken method
+				}
+			}
+		};
+
+		checkAuth();
+	}, [navigate, location]);
 
 	const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -25,8 +46,9 @@ const AdminLogin = () => {
 				password: form.password
 			});
 			
-			// Navigate to admin dashboard on successful login
-			navigate('/admin-dashboard');
+			// Navigate to intended page or admin dashboard on successful login
+			const from = location.state?.from?.pathname || '/admin-dashboard';
+			navigate(from, { replace: true });
 		} catch (err) {
 			setError(err.message || 'Invalid credentials. Please try again.');
 			console.error('Login error:', err);

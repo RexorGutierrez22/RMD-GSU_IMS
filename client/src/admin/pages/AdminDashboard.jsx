@@ -28,7 +28,8 @@ const AdminDashboard = () => {
 	const [chartView, setChartView] = useState('month'); // 'week', 'month'
 
 	useEffect(() => {
-		// Check if user is authenticated
+		// Check if user is authenticated - this is now handled by ProtectedRoute
+		// but we'll keep a basic check as a fallback
 		if (!adminAuth.isAuthenticated()) {
 			navigate('/admin-login');
 			return;

@@ -29,6 +29,7 @@ Route::get('/test', function () {
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/admin/verify', [AuthController::class, 'verify'])->middleware('auth:sanctum');
 
 // Dashboard routes
 Route::middleware('auth:sanctum')->prefix('dashboard')->group(function () {
