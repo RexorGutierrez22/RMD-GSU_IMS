@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { adminAuth } from '../services/adminAPI.js';
 
 const AdminLogin = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [form, setForm] = useState({
 		username: '',
 		password: ''
@@ -12,6 +13,26 @@ const AdminLogin = () => {
 	const [error, setError] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 
+	// Check if user is already authenticated
+	useEffect(() => {
+		const checkAuth = async () => {
+			if (adminAuth.isAuthenticated()) {
+				// Try to verify the token
+				try {
+					await adminAuth.verifyToken();
+					// Redirect to intended page or dashboard
+					const from = location.state?.from?.pathname || '/admin-dashboard';
+					navigate(from, { replace: true });
+				} catch (error) {
+					console.error('Token verification failed:', error);
+					// Token is invalid, it's already removed by verifyToken method
+				}
+			}
+		};
+
+		checkAuth();
+	}, [navigate, location]);
+
 	const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
 	const onSubmit = async (e) => {
@@ -19,35 +40,18 @@ const AdminLogin = () => {
 		setLoading(true);
 		setError('');
 		
-<<<<<<< HEAD
-		// Check for default admin credentials first
-		if (form.username === 'admin' && form.password === 'password') {
-			// Generate a temporary token for default admin
-			const defaultToken = 'default_admin_token_' + Date.now();
-			localStorage.setItem('admin_token', defaultToken);
-			navigate('/dashboard');
-			setLoading(false);
-			return;
-		}
-		
-=======
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 		try {
-			const { data } = await axios.post('http://127.0.0.1:8000/api/login', {
-				email: form.username, // Assuming username is email
+			const response = await adminAuth.login({
+				email: form.username, // The username field will be used as email
 				password: form.password
 			});
 			
-			// Store token and redirect to admin dashboard
-			localStorage.setItem('admin_token', data.token);
-<<<<<<< HEAD
-			navigate('/dashboard');
-=======
-			navigate('/admin-dashboard');
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
+			// Navigate to intended page or admin dashboard on successful login
+			const from = location.state?.from?.pathname || '/admin-dashboard';
+			navigate(from, { replace: true });
 		} catch (err) {
-			setError('Invalid credentials. Please try again.');
-			console.error(err);
+			setError(err.message || 'Invalid credentials. Please try again.');
+			console.error('Login error:', err);
 		}
 		setLoading(false);
 	};
@@ -77,39 +81,6 @@ const AdminLogin = () => {
 						</div>
 
 						<div className="mb-8">
-<<<<<<< HEAD
-							<h2 className="text-xl font-medium text-gray-700 mb-6">Hello! Admin Welcome Back!</h2>
-							
-							<form onSubmit={onSubmit} className="space-y-2">
-								<div className="floating-label-input relative">
-									<input
-										type="text"
-										name="username"
-										value={form.username}
-										onChange={onChange}
-										className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-red-600 bg-white"
-										placeholder=" "
-										required
-									/>
-									<label className="floating-label">
-										Username
-									</label>
-								</div>
-
-								<div className="floating-label-input relative">
-									<input
-										type={showPassword ? "text" : "password"}
-										name="password"
-										value={form.password}
-										onChange={onChange}
-										className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-red-600 bg-white"
-										placeholder=" "
-										required
-									/>
-									<label className="floating-label">
-										Password
-									</label>
-=======
 							<h2 className="text-xl font-medium text-gray-700 mb-6">hello! Admin</h2>
 							
 							<form onSubmit={onSubmit} className="space-y-4">
@@ -135,7 +106,6 @@ const AdminLogin = () => {
 										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent pr-12"
 										required
 									/>
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 									<button
 										type="button"
 										onClick={() => setShowPassword(!showPassword)}

@@ -14,7 +14,11 @@ class DashboardController extends Controller
         try {
             $totalStudents = Student::count();
             $totalEmployees = Employee::count();
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
             // For now, using mock data for inventory items and pending requests
             // These can be updated when inventory and borrowing models are created
             $totalItems = 320; // This would come from Inventory model
@@ -58,7 +62,11 @@ class DashboardController extends Controller
             $recentEmployees = Employee::latest()->take(3)->get();
             foreach ($recentEmployees as $employee) {
                 $activities[] = [
+<<<<<<< HEAD
                     'type' => 'employee_registration', 
+=======
+                    'type' => 'employee_registration',
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
                     'message' => "New employee registered: {$employee->first_name} {$employee->last_name}",
                     'timestamp' => $employee->created_at,
                     'icon' => 'users'

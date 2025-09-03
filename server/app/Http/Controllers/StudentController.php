@@ -12,6 +12,7 @@ class StudentController extends Controller
 {
     public function store(Request $request)
     {
+<<<<<<< HEAD
         try {
             // Log the incoming request for debugging
             \Log::info('Student registration request received', [
@@ -36,6 +37,19 @@ class StudentController extends Controller
                 'errors' => $e->errors()
             ], 422);
         }
+=======
+        // Validate request data
+        $validated = $request->validate([
+            'firstName' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'middleName' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:students,email',
+            'studentId' => 'required|string|unique:students,student_id',
+            'course' => 'required|string|max:255',
+            'yearLevel' => 'required|string|max:255',
+            'contact' => 'required|string|max:20'
+        ]);
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 
         // Create student record
         $student = Student::create([
@@ -65,6 +79,7 @@ class StudentController extends Controller
             ->size(200)
             ->generate(json_encode($qrData));
 
+<<<<<<< HEAD
         // Save QR code to public directory with organized folder structure
         $qrFileName = 'Student_' . $student->student_id . '_' . $student->first_name . '_' . $student->last_name . '.svg';
         $qrPath = 'qr_codes/students/' . $qrFileName;
@@ -72,6 +87,15 @@ class StudentController extends Controller
         // Ensure qr_codes/students directory exists
         if (!file_exists(public_path('qr_codes/students'))) {
             mkdir(public_path('qr_codes/students'), 0755, true);
+=======
+        // Save QR code to public directory
+        $qrFileName = $student->student_id . '_' . $student->first_name . '_' . $student->last_name . '.svg';
+        $qrPath = 'qr_codes/' . $qrFileName;
+
+        // Ensure qr_codes directory exists
+        if (!file_exists(public_path('qr_codes'))) {
+            mkdir(public_path('qr_codes'), 0755, true);
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
         }
 
         file_put_contents(public_path($qrPath), $qrCodeSvg);
@@ -85,6 +109,7 @@ class StudentController extends Controller
             'qr_url' => url($qrPath)
         ], 201);
     }
+<<<<<<< HEAD
 
     public function checkUniqueness(Request $request)
     {
@@ -104,4 +129,6 @@ class StudentController extends Controller
             'emailExists' => $emailExists
         ]);
     }
+=======
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 }

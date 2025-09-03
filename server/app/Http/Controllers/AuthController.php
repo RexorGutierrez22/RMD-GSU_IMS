@@ -39,4 +39,13 @@ class AuthController extends Controller
             'message' => 'Logged out successfully'
         ]);
     }
+
+    public function verify(Request $request)
+    {
+        // If this method is reached, it means the middleware validated the token
+        return response()->json([
+            'valid' => true,
+            'user' => $request->user()
+        ]);
+    }
 }

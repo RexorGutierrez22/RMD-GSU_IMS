@@ -11,6 +11,7 @@ class EmployeeController extends Controller
 {
     public function store(Request $request)
     {
+<<<<<<< HEAD
         try {
             // Validate request data
             $validated = $request->validate([
@@ -29,6 +30,19 @@ class EmployeeController extends Controller
                 'errors' => $e->errors()
             ], 422);
         }
+=======
+        // Validate request data
+        $validated = $request->validate([
+            'firstName' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'middleName' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:employees,email',
+            'empId' => 'required|string|unique:employees,emp_id',
+            'position' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'contact' => 'required|string|max:20'
+        ]);
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 
         // Create employee record
         $employee = Employee::create([
@@ -57,6 +71,7 @@ class EmployeeController extends Controller
             ->size(200)
             ->generate(json_encode($qrData));
 
+<<<<<<< HEAD
         // Save QR code to public directory with organized folder structure
         $qrFileName = 'Employee_' . $employee->emp_id . '_' . $employee->first_name . '_' . $employee->last_name . '.svg';
         $qrPath = 'qr_codes/employees/' . $qrFileName;
@@ -64,6 +79,15 @@ class EmployeeController extends Controller
         // Ensure qr_codes/employees directory exists
         if (!file_exists(public_path('qr_codes/employees'))) {
             mkdir(public_path('qr_codes/employees'), 0755, true);
+=======
+        // Save QR code to public directory
+        $qrFileName = $employee->emp_id . '_' . $employee->first_name . '_' . $employee->last_name . '.svg';
+        $qrPath = 'qr_codes/' . $qrFileName;
+
+        // Ensure qr_codes directory exists
+        if (!file_exists(public_path('qr_codes'))) {
+            mkdir(public_path('qr_codes'), 0755, true);
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
         }
 
         file_put_contents(public_path($qrPath), $qrCodeSvg);
@@ -77,6 +101,7 @@ class EmployeeController extends Controller
             'qr_url' => url($qrPath)
         ], 201);
     }
+<<<<<<< HEAD
 
     public function checkUniqueness(Request $request)
     {
@@ -96,4 +121,6 @@ class EmployeeController extends Controller
             'emailExists' => $emailExists
         ]);
     }
+=======
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 }

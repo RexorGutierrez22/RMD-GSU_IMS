@@ -29,6 +29,7 @@ Route::get('/test', function () {
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/admin/verify', [AuthController::class, 'verify'])->middleware('auth:sanctum');
 
 // Dashboard routes
 Route::middleware('auth:sanctum')->prefix('dashboard')->group(function () {
@@ -39,7 +40,10 @@ Route::middleware('auth:sanctum')->prefix('dashboard')->group(function () {
 // Registration routes
 Route::post('/employees', [EmployeeController::class, 'store']);
 Route::post('/students', [StudentController::class, 'store']);
+<<<<<<< HEAD
 
 // Uniqueness checking routes
 Route::post('/check-student-uniqueness', [StudentController::class, 'checkUniqueness']);
 Route::post('/check-employee-uniqueness', [EmployeeController::class, 'checkUniqueness']);
+=======
+>>>>>>> 48275face3fabc943866499a45a7293cef2ac622

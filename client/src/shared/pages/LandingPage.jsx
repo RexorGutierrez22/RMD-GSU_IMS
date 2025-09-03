@@ -23,11 +23,18 @@ const LandingPage = () => {
       <div className="absolute inset-0 bg-white opacity-30 z-0"></div>
 
       {/* Global Header */}
-      <Header />
+      <Header rightContent={
+        <button 
+          onClick={() => navigate('/admin-login')}
+          className="text-white hover:text-gray-200 text-sm px-2 py-1 rounded transition-colors"
+        >
+          Admin
+        </button>
+      } />
 
       {/* Main Content */}
       <main className="flex-1 z-10 flex flex-col items-center justify-center text-center px-4 py-24">
-        <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-semibold mb-8" style={{ marginTop: '-130px' }}>
+        <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-semibold mb-8 mt-negative-130">
           Good Day! How may I assist you?
         </h2>
 
