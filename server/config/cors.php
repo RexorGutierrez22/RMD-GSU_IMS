@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*',],
+    'paths' => ['api/*', 'qr_codes/*'],
 
     'allowed_methods' => ['*'],
 

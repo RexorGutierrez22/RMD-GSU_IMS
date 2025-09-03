@@ -40,10 +40,27 @@ Route::middleware('auth:sanctum')->prefix('dashboard')->group(function () {
 // Registration routes
 Route::post('/employees', [EmployeeController::class, 'store']);
 Route::post('/students', [StudentController::class, 'store']);
-<<<<<<< HEAD
 
 // Uniqueness checking routes
 Route::post('/check-student-uniqueness', [StudentController::class, 'checkUniqueness']);
 Route::post('/check-employee-uniqueness', [EmployeeController::class, 'checkUniqueness']);
-=======
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
+
+// QR Code download route
+Route::get('/download-qr/{type}/{filename}', function ($type, $filename) {
+    $path = public_path("qr_codes/{$type}/{$filename}");
+
+    if (!file_exists($path)) {
+        return response()->json(['error' => 'QR code not found'], 404);
+    }
+
+    $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
+    $mimeType = $fileExtension === 'svg' ? 'image/svg+xml' : 'image/png';
+
+    return response()->file($path, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET',
+        'Access-Control-Allow-Headers' => '*'
+    ]);
+})->where(['type' => 'students|employees', 'filename' => '.*']);

@@ -186,7 +186,6 @@ footer span:hover {
   opacity: 0.8;
 }
 
-<<<<<<< HEAD
 /* Custom scrollbar styles for professional appearance */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -264,7 +263,8 @@ footer span:hover {
 /* Active state animation */
 .floating-label-input input:active {
   transform: scale(0.98);
-=======
+}
+
 /* Essential utility classes for landing page */
 .min-h-screen {
   min-height: 100vh;
@@ -496,5 +496,4 @@ footer span:hover {
   .md\:text-4xl {
     font-size: 2.25rem;
   }
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 }

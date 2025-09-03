@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Alert from '../components/Alert.jsx';
@@ -8,9 +8,6 @@ import Footer from '../components/Footer.jsx';
 
 const RegisterEmployee = () => {
 	const navigate = useNavigate();
-	const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm";
-	const errorInputClass = "w-full px-3 py-2 border border-red-500 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm";
-	
 	const [form, setForm] = useState({
 		firstName: '',
 		lastName: '',
@@ -25,17 +22,17 @@ const RegisterEmployee = () => {
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('');
 	const [alertType, setAlertType] = useState('error');
+	const [qrUrl, setQrUrl] = useState('');
 	const [fieldErrors, setFieldErrors] = useState({});
 	const [isCheckingUniqueness, setIsCheckingUniqueness] = useState(false);
 	const [showQRModal, setShowQRModal] = useState(false);
 	const [registeredData, setRegisteredData] = useState(null);
 
 	const onChange = (e) => {
-		const { name, value } = e.target;
-		setForm(prev => ({ ...prev, [name]: value }));
+		setForm({ ...form, [e.target.name]: e.target.value });
 		// Clear field-specific errors when user types
-		if (fieldErrors[name]) {
-			setFieldErrors(prev => ({ ...prev, [name]: null }));
+		if (fieldErrors[e.target.name]) {
+			setFieldErrors({ ...fieldErrors, [e.target.name]: null });
 		}
 	};
 
@@ -66,6 +63,9 @@ const RegisterEmployee = () => {
 		const timeoutId = setTimeout(checkUniqueness, 500); // Debounce for 500ms
 		return () => clearTimeout(timeoutId);
 	}, [form.empId, form.email]);
+	const [qrUrl, setQrUrl] = useState('');
+
+	const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
 	const onSubmit = async (e) => {
 		e.preventDefault();
@@ -83,12 +83,14 @@ const RegisterEmployee = () => {
 				qrCode: data.qr_url || ''
 			});
 			
-			// Show success alert with celebration message
-			setMsg('🎉 Registration Successful!');
+			// Show success alert and modal
+			setMsg(data.message || 'Employee registered successfully!');
 			setAlertType('success');
 			setQrUrl(data.qr_url || '');
 			setShowQRModal(true);
 			
+			setMsg(data.message || 'Employee registered successfully!');
+			setQrUrl(data.qr_url || '');
 			// Reset form
 			setForm({
 				firstName: '',
@@ -121,6 +123,9 @@ const RegisterEmployee = () => {
 			} else {
 				setMsg('❌ Registration failed. Please check the fields and try again.');
 			}
+		} catch (err) {
+			setMsg('Registration failed. Please check the fields and backend.');
+			console.error(err);
 		}
 		setLoading(false);
 	};
@@ -418,6 +423,13 @@ const RegisterEmployee = () => {
 											{loading ? 'REGISTERING...' : 'REGISTER EMPLOYEE'}
 										</button>
 									</form>
+
+									{/* Message Display */}
+									{msg && (
+										<div className={`mt-4 p-3 rounded-lg text-sm ${msg.includes('failed') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+											{msg}
+										</div>
+									)}
 								</div>
 							</div>
 						</div>
@@ -463,7 +475,7 @@ const RegisterEmployee = () => {
 			{/* Footer */}
 			<Footer />
 
-			{/* Alert Component - shows above modal */}
+			{/* Alert Component */}
 			<Alert 
 				message={msg} 
 				type={alertType} 
@@ -471,26 +483,19 @@ const RegisterEmployee = () => {
 				onClose={() => setMsg('')}
 			/>
 
-			{/* Message Display */}
-						</div>
-					</div>
-				</div>
-			</div>
-		</main>
-
-		{/* Footer */}
-		<Footer />
-
-		{/* QR Code Modal */}
-		{showQRModal && registeredData && (
-			<QRCodeModal
-				isOpen={showQRModal}
-				onClose={() => setShowQRModal(false)}
-				qrUrl={registeredData.qrCode}
-				studentData={registeredData}
-			/>
-		)}
-	</div>
+			{/* QR Code Modal */}
+			{showQRModal && registeredData && (
+				<QRCodeModal
+					isOpen={showQRModal}
+					onClose={() => setShowQRModal(false)}
+					qrUrl={registeredData.qrCode}
+					studentData={registeredData}
+				/>
+			)}
+			<footer className="bg-red-600 text-white px-6 py-3 text-center">
+				<p className="text-sm">© 2025 CIC INTERNS</p>
+			</footer>
+		</div>
 	);
 };
 

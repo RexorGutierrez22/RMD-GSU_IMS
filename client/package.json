@@ -9,12 +9,8 @@
     "globals": "^16.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-<<<<<<< HEAD
     "react-router-dom": "^6.14.2",
     "recharts": "^3.1.2"
-=======
-    "react-router-dom": "^6.14.2"
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
   },
   "scripts": {
     "dev": "vite",
