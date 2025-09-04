@@ -19,35 +19,27 @@ const AdminLogin = () => {
 		setLoading(true);
 		setError('');
 		
-<<<<<<< HEAD
-		// Check for default admin credentials first
-		if (form.username === 'admin' && form.password === 'password') {
-			// Generate a temporary token for default admin
-			const defaultToken = 'default_admin_token_' + Date.now();
-			localStorage.setItem('admin_token', defaultToken);
-			navigate('/dashboard');
-			setLoading(false);
-			return;
-		}
-		
-=======
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 		try {
-			const { data } = await axios.post('http://127.0.0.1:8000/api/login', {
-				email: form.username, // Assuming username is email
+			const { data } = await axios.post('http://127.0.0.1:8001/api/admin/login', {
+				username: form.username, // Can be username or email
 				password: form.password
 			});
 			
-			// Store token and redirect to admin dashboard
+			// Store token and admin data
 			localStorage.setItem('admin_token', data.token);
-<<<<<<< HEAD
+			localStorage.setItem('admin_user', JSON.stringify(data.admin));
+			
+			// Redirect to admin dashboard
 			navigate('/dashboard');
-=======
-			navigate('/admin-dashboard');
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 		} catch (err) {
-			setError('Invalid credentials. Please try again.');
-			console.error(err);
+			if (err.response?.data?.message) {
+				setError(err.response.data.message);
+			} else if (err.response?.data?.errors?.username) {
+				setError(err.response.data.errors.username[0]);
+			} else {
+				setError('Invalid credentials. Please try again.');
+			}
+			console.error('Login error:', err);
 		}
 		setLoading(false);
 	};
@@ -60,7 +52,8 @@ const AdminLogin = () => {
 					<img 
 						src="/Usep_logo.png" 
 						alt="USeP Logo" 
-						className="h-12 w-12 bg-white rounded-full p-1"
+						className="h-12 w-12 bg-white rounded-full p-1 cursor-pointer hover:scale-105 transition-transform"
+						onClick={() => navigate('/')}
 					/>
 				</div>
 			</div>
@@ -77,7 +70,6 @@ const AdminLogin = () => {
 						</div>
 
 						<div className="mb-8">
-<<<<<<< HEAD
 							<h2 className="text-xl font-medium text-gray-700 mb-6">Hello! Admin Welcome Back!</h2>
 							
 							<form onSubmit={onSubmit} className="space-y-2">
@@ -109,33 +101,6 @@ const AdminLogin = () => {
 									<label className="floating-label">
 										Password
 									</label>
-=======
-							<h2 className="text-xl font-medium text-gray-700 mb-6">hello! Admin</h2>
-							
-							<form onSubmit={onSubmit} className="space-y-4">
-								<div>
-									<input
-										type="text"
-										name="username"
-										placeholder="username"
-										value={form.username}
-										onChange={onChange}
-										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-										required
-									/>
-								</div>
-
-								<div className="relative">
-									<input
-										type={showPassword ? "text" : "password"}
-										name="password"
-										placeholder="password"
-										value={form.password}
-										onChange={onChange}
-										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent pr-12"
-										required
-									/>
->>>>>>> 48275face3fabc943866499a45a7293cef2ac622
 									<button
 										type="button"
 										onClick={() => setShowPassword(!showPassword)}

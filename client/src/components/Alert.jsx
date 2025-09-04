@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 const Alert = ({ message, type = 'error', duration = 5000, onClose }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(100);
+
+  const styles = useMemo(() => ({
+    bgColor: type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-blue-500',
+    progressColor: type === 'error' ? 'bg-red-300' : type === 'success' ? 'bg-green-300' : 'bg-blue-300',
+    shadowColor: type === 'success' ? 'shadow-green-200' : 'shadow-lg'
+  }), [type]);
 
   useEffect(() => {
     if (!message) return;
@@ -31,14 +37,11 @@ const Alert = ({ message, type = 'error', duration = 5000, onClose }) => {
 
   if (!message || !isVisible) return null;
 
-  const bgColor = type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : 'bg-blue-500';
-  const progressColor = type === 'error' ? 'bg-red-300' : type === 'success' ? 'bg-green-300' : 'bg-blue-300';
-
   return (
-    <div className={`fixed bottom-4 right-4 z-50 transform transition-all duration-300 ease-in-out ${
+    <div className={`fixed bottom-4 right-4 z-[60] transform transition-all duration-300 ease-in-out ${
       isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
     }`}>
-      <div className={`${bgColor} text-white px-6 py-4 rounded-lg shadow-lg max-w-sm min-w-[300px] relative overflow-hidden`}>
+      <div className={`${styles.bgColor} text-white px-6 py-4 rounded-lg ${styles.shadowColor} max-w-sm min-w-[300px] relative overflow-hidden ${type === 'success' ? 'shadow-xl' : 'shadow-lg'}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             {type === 'error' && (
@@ -47,11 +50,14 @@ const Alert = ({ message, type = 'error', duration = 5000, onClose }) => {
               </svg>
             )}
             {type === 'success' && (
-              <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
+              <div className="flex items-center mr-3">
+                <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-lg">🎉</span>
+              </div>
             )}
-            <span className="text-sm font-medium">{message}</span>
+            <span className={`font-medium ${type === 'success' ? 'text-base font-semibold' : 'text-sm'}`}>{message}</span>
           </div>
           <button
             onClick={() => {
@@ -68,7 +74,7 @@ const Alert = ({ message, type = 'error', duration = 5000, onClose }) => {
         {/* Progress bar */}
         <div className="absolute bottom-0 left-0 w-full h-1 bg-black bg-opacity-20">
           <div
-            className={`h-full ${progressColor} transition-all duration-100 ease-linear`}
+            className={`h-full ${styles.progressColor} transition-all duration-100 ease-linear`}
             style={{ width: `${progress}%` }}
           />
         </div>

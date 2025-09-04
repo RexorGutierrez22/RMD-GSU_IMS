@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: 'http://localhost:8001/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -35,5 +35,11 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+// Dashboard API endpoints
+export const dashboardApi = {
+    getStats: () => api.get('/test-dashboard/stats'),
+    getActivity: () => api.get('/test-dashboard/activity')
+};
 
 export default api;

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
+const BASE_URL = 'http://127.0.0.1:8001/api';
 
 // Create axios instance for admin API calls
 const adminAPI = axios.create({
@@ -24,28 +24,37 @@ export const adminAuth = {
   // Login admin user
   login: async (credentials) => {
     try {
-      const response = await adminAPI.post('/login', {
-        email: credentials.email, // Use email field correctly
+      const response = await adminAPI.post('/admin/login', {
+        username: credentials.email || credentials.username, // Accept both email and username
         password: credentials.password
       });
       
       // Store token on successful login
       if (response.data.token) {
         localStorage.setItem('admin_token', response.data.token);
+        localStorage.setItem('admin_user', JSON.stringify(response.data.admin));
       }
       
       return response.data;
     } catch (error) {
       console.error('Login error:', error);
-      throw new Error(error.response?.data?.message || 'Login failed');
+      throw new Error(error.response?.data?.message || error.response?.data?.errors?.username?.[0] || 'Login failed');
     }
   },
 
   // Logout admin user
   logout: async () => {
-    const response = await adminAPI.post('/logout');
-    localStorage.removeItem('admin_token');
-    return response.data;
+    try {
+      const response = await adminAPI.post('/admin/logout');
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      return response.data;
+    } catch (error) {
+      // Even if logout fails on server, clear local storage
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      throw error;
+    }
   },
 
   // Check if admin is authenticated
@@ -61,8 +70,15 @@ export const adminAuth = {
     } catch (error) {
       console.error('Token verification failed:', error);
       localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
       throw error;
     }
+  },
+
+  // Get current admin data
+  getCurrentAdmin: () => {
+    const adminData = localStorage.getItem('admin_user');
+    return adminData ? JSON.parse(adminData) : null;
   },
 
   // Get admin token

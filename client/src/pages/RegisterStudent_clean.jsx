@@ -1,59 +1,59 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Alert from '../components/Alert.jsx';
 import QRCodeModal from '../components/QRCodeModal.jsx';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const RegisterEmployee = () => {
+const RegisterStudent = () => {
 	const navigate = useNavigate();
-	const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm";
-	const errorInputClass = "w-full px-3 py-2 border border-red-500 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm";
-	
 	const [form, setForm] = useState({
 		firstName: '',
 		lastName: '',
 		middleName: '',
 		email: '',
-		empId: '',
-		position: '',
-		department: '',
+		studentId: '',
+		course: '',
+		yearLevel: '',
 		contact: '',
 	});
 
 	const [loading, setLoading] = useState(false);
 	const [msg, setMsg] = useState('');
 	const [alertType, setAlertType] = useState('error');
+	const [qrUrl, setQrUrl] = useState('');
 	const [fieldErrors, setFieldErrors] = useState({});
 	const [isCheckingUniqueness, setIsCheckingUniqueness] = useState(false);
 	const [showQRModal, setShowQRModal] = useState(false);
 	const [registeredData, setRegisteredData] = useState(null);
 
 	const onChange = (e) => {
-		const { name, value } = e.target;
-		setForm(prev => ({ ...prev, [name]: value }));
+		setForm({ ...form, [e.target.name]: e.target.value });
 		// Clear field-specific errors when user types
-		if (fieldErrors[name]) {
-			setFieldErrors(prev => ({ ...prev, [name]: null }));
+		if (fieldErrors[e.target.name]) {
+			setFieldErrors({ ...fieldErrors, [e.target.name]: null });
 		}
 	};
 
 	// Real-time uniqueness checking with debounce
 	useEffect(() => {
 		const checkUniqueness = async () => {
-			if (!form.empId && !form.email) return;
+			if (!form.studentId && !form.email) return;
 			
 			setIsCheckingUniqueness(true);
 			try {
-				const response = await axios.post('http://127.0.0.1:8000/api/check-employee-uniqueness', {
-					empId: form.empId,
+				const response = await axios.post('http://127.0.0.1:8000/api/check-student-uniqueness', {
+					studentId: form.studentId,
 					email: form.email
 				});
 				
 				setFieldErrors({
 					...fieldErrors,
-					empId: response.data.empIdExists ? 'Employee ID already exists' : null,
+					studentId: response.data.studentIdExists ? 'Student ID already exists' : null,
 					email: response.data.emailExists ? 'Email already exists' : null
 				});
 			} catch (error) {
@@ -65,7 +65,10 @@ const RegisterEmployee = () => {
 
 		const timeoutId = setTimeout(checkUniqueness, 500); // Debounce for 500ms
 		return () => clearTimeout(timeoutId);
-	}, [form.empId, form.email]);
+	}, [form.studentId, form.email]);
+	const [qrUrl, setQrUrl] = useState('');
+
+	const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
 	const onSubmit = async (e) => {
 		e.preventDefault();
@@ -74,30 +77,32 @@ const RegisterEmployee = () => {
 		setQrUrl('');
 		
 		try {
-			const { data } = await axios.post('http://127.0.0.1:8000/api/employees', form);
+			const { data } = await axios.post('http://127.0.0.1:8000/api/students', form);
 			
 			// Store the registration data for the modal
 			setRegisteredData({
 				...form,
-				id: data.employee?.id || 'N/A',
+				id: data.student?.id || 'N/A',
 				qrCode: data.qr_url || ''
 			});
 			
-			// Show success alert with celebration message
-			setMsg('🎉 Registration Successful!');
+			// Show success alert and modal
+			setMsg(data.message || 'Student registered successfully!');
 			setAlertType('success');
 			setQrUrl(data.qr_url || '');
 			setShowQRModal(true);
 			
+			setMsg(data.message || 'Student registered successfully!');
+			setQrUrl(data.qr_url || '');
 			// Reset form
 			setForm({
 				firstName: '',
 				lastName: '',
 				middleName: '',
 				email: '',
-				empId: '',
-				position: '',
-				department: '',
+				studentId: '',
+				course: '',
+				yearLevel: '',
 				contact: '',
 			});
 			setFieldErrors({});
@@ -109,8 +114,8 @@ const RegisterEmployee = () => {
 				const errors = err.response.data.errors;
 				setFieldErrors(errors);
 				const errorMessages = Object.values(errors).flat();
-				if (errorMessages.some(msg => msg.includes('emp id has already been taken'))) {
-					setMsg('❌ Employee ID already exists! Please use a different Employee ID.');
+				if (errorMessages.some(msg => msg.includes('student id has already been taken'))) {
+					setMsg('❌ Student ID already exists! Please use a different Student ID.');
 				} else if (errorMessages.some(msg => msg.includes('email has already been taken'))) {
 					setMsg('❌ Email already exists! Please use a different email address.');
 				} else {
@@ -121,6 +126,9 @@ const RegisterEmployee = () => {
 			} else {
 				setMsg('❌ Registration failed. Please check the fields and try again.');
 			}
+		} catch (err) {
+			setMsg('Registration failed. Please check the fields and backend.');
+			console.error(err);
 		}
 		setLoading(false);
 	};
@@ -129,7 +137,7 @@ const RegisterEmployee = () => {
 		<div className="h-screen flex flex-col bg-gray-50">
 			{/* Header */}
 			<Header 
-				title="Register Employee" 
+				title="Register Student" 
 				rightContent={
 					<button 
 						onClick={() => navigate('/register')}
@@ -150,7 +158,7 @@ const RegisterEmployee = () => {
 							{/* Card Header */}
 							<div className="px-6 py-4 bg-gradient-to-r from-red-50 to-pink-50 border-b border-gray-100">
 								<h2 className="text-xl font-light text-gray-800 mb-1">Hello there!</h2>
-								<p className="text-gray-600 text-sm">Please fill out the form to register as an employee.</p>
+								<p className="text-gray-600 text-sm">Please fill out the form to register as a student.</p>
 							</div>
 
 							{/* Card Body */}
@@ -218,23 +226,23 @@ const RegisterEmployee = () => {
 										)}
 									</div>
 
-									{/* Employee ID */}
+									{/* Student ID */}
 									<div>
 										<input
-											name="empId"
-											placeholder="Employee ID"
-											value={form.empId}
+											name="studentId"
+											placeholder="Student ID"
+											value={form.studentId}
 											onChange={onChange}
 											className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm ${
-												fieldErrors.empId ? 'border-red-500' : ''
+												fieldErrors.studentId ? 'border-red-500' : ''
 											}`}
 											required
 										/>
-										{fieldErrors.empId && (
-											<p className="text-red-500 text-xs mt-1">{fieldErrors.empId}</p>
+										{fieldErrors.studentId && (
+											<p className="text-red-500 text-xs mt-1">{fieldErrors.studentId}</p>
 										)}
-										{isCheckingUniqueness && form.empId && (
-											<p className="text-blue-500 text-xs mt-1">Checking employee ID availability...</p>
+										{isCheckingUniqueness && form.studentId && (
+											<p className="text-blue-500 text-xs mt-1">Checking student ID availability...</p>
 										)}
 									</div>
 
@@ -253,13 +261,13 @@ const RegisterEmployee = () => {
 										)}
 									</div>
 
-									{/* Position and Department */}
+									{/* Course and Year Level */}
 									<div className="grid grid-cols-2 gap-3">
 										<div>
 											<input
-												name="position"
-												placeholder="Position"
-												value={form.position}
+												name="course"
+												placeholder="Course"
+												value={form.course}
 												onChange={onChange}
 												className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm"
 												required
@@ -267,9 +275,9 @@ const RegisterEmployee = () => {
 										</div>
 										<div>
 											<input
-												name="department"
-												placeholder="Department"
-												value={form.department}
+												name="yearLevel"
+												placeholder="Year Level"
+												value={form.yearLevel}
 												onChange={onChange}
 												className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm"
 												required
@@ -280,14 +288,14 @@ const RegisterEmployee = () => {
 									{/* Submit Button */}
 									<button
 										type="submit"
-										disabled={loading || fieldErrors.empId || fieldErrors.email}
+										disabled={loading || fieldErrors.studentId || fieldErrors.email}
 										className="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 									>
-										{loading ? 'REGISTERING...' : 'REGISTER EMPLOYEE'}
+										{loading ? 'REGISTERING...' : 'REGISTER STUDENT'}
 									</button>
 								</form>
 			<header className="bg-red-600 text-white px-6 py-4 flex justify-between items-center">
-				<h1 className="text-xl font-medium">Register Employee</h1>
+				<h1 className="text-xl font-medium">Register Student</h1>
 				<button 
 					onClick={() => navigate('/register')}
 					className="text-white hover:text-gray-200 font-medium"
@@ -307,7 +315,7 @@ const RegisterEmployee = () => {
 								{/* Card Header */}
 								<div className="px-6 py-4 bg-gradient-to-r from-red-50 to-pink-50 border-b border-gray-100">
 									<h2 className="text-xl font-light text-gray-800 mb-1">Hello there!</h2>
-									<p className="text-gray-600 text-sm">Please fill out the form to register as an employee.</p>
+									<p className="text-gray-600 text-sm">Please fill out the form to register as a student.</p>
 								</div>
 
 								{/* Card Body */}
@@ -373,25 +381,25 @@ const RegisterEmployee = () => {
 											</div>
 										</div>
 
-										{/* Employee ID */}
+										{/* Student ID */}
 										<div>
 											<input
-												name="empId"
-												placeholder="Employee ID Number"
-												value={form.empId}
+												name="studentId"
+												placeholder="Student ID Number"
+												value={form.studentId}
 												onChange={onChange}
 												className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm"
 												required
 											/>
 										</div>
 
-										{/* Position and Department */}
+										{/* Course and Year Level */}
 										<div className="grid grid-cols-2 gap-3">
 											<div>
 												<input
-													name="position"
-													placeholder="Position"
-													value={form.position}
+													name="course"
+													placeholder="Course"
+													value={form.course}
 													onChange={onChange}
 													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm"
 													required
@@ -399,9 +407,9 @@ const RegisterEmployee = () => {
 											</div>
 											<div>
 												<input
-													name="department"
-													placeholder="Department"
-													value={form.department}
+													name="yearLevel"
+													placeholder="Year Level"
+													value={form.yearLevel}
 													onChange={onChange}
 													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white text-sm"
 													required
@@ -415,9 +423,16 @@ const RegisterEmployee = () => {
 											disabled={loading}
 											className="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 										>
-											{loading ? 'REGISTERING...' : 'REGISTER EMPLOYEE'}
+											{loading ? 'REGISTERING...' : 'REGISTER STUDENT'}
 										</button>
 									</form>
+
+									{/* Message Display */}
+									{msg && (
+										<div className={`mt-4 p-3 rounded-lg text-sm ${msg.includes('failed') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+											{msg}
+										</div>
+									)}
 								</div>
 							</div>
 						</div>
@@ -432,7 +447,7 @@ const RegisterEmployee = () => {
 										<h3 className="text-lg font-medium text-gray-800 mb-4">Registration Successful!</h3>
 										<p className="text-sm text-gray-600 mb-4">Your QR Code:</p>
 										<div className="mb-4">
-											<img src={qrUrl} alt="Employee QR Code" className="mx-auto border rounded-lg" />
+											<img src={qrUrl} alt="Student QR Code" className="mx-auto border rounded-lg" />
 										</div>
 										<a 
 											href={qrUrl} 
@@ -463,7 +478,7 @@ const RegisterEmployee = () => {
 			{/* Footer */}
 			<Footer />
 
-			{/* Alert Component - shows above modal */}
+			{/* Alert Component */}
 			<Alert 
 				message={msg} 
 				type={alertType} 
@@ -471,27 +486,20 @@ const RegisterEmployee = () => {
 				onClose={() => setMsg('')}
 			/>
 
-			{/* Message Display */}
-						</div>
-					</div>
-				</div>
-			</div>
-		</main>
-
-		{/* Footer */}
-		<Footer />
-
-		{/* QR Code Modal */}
-		{showQRModal && registeredData && (
-			<QRCodeModal
-				isOpen={showQRModal}
-				onClose={() => setShowQRModal(false)}
-				qrUrl={registeredData.qrCode}
-				studentData={registeredData}
-			/>
-		)}
-	</div>
+			{/* QR Code Modal */}
+			{showQRModal && registeredData && (
+				<QRCodeModal
+					isOpen={showQRModal}
+					onClose={() => setShowQRModal(false)}
+					qrUrl={registeredData.qrCode}
+					studentData={registeredData}
+				/>
+			)}
+			<footer className="bg-red-600 text-white px-6 py-3 text-center">
+				<p className="text-sm">© 2025 CIC INTERNS</p>
+			</footer>
+		</div>
 	);
 };
 
-export default RegisterEmployee;
+export default RegisterStudent;

@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
 	AnalyticsDashboard,
 	BorrowersRequestDashboard,
+	BorrowedItemDashboard,
 	InventoryDashboard,
 	CalendarDashboard
 } from '../components/AdminDashboard';
+import Inventory from './Inventory.jsx';
 
 const AdminDashboard = () => {
 	const navigate = useNavigate();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [sidebarOpen, setSidebarOpen] = useState(true); // Default to open
@@ -27,10 +30,16 @@ const AdminDashboard = () => {
 			navigate('/dashboard', { replace: true });
 		}
 
+		// Check for query parameter and set active submenu
+		const querySubmenu = searchParams.get('Inventory');
+		if (querySubmenu !== null) {
+			setActiveSubmenu('inventory');
+		}
+
 		// Validate token and load user data
 		setUser({ name: 'Admin User', email: 'admin@rmd.usep.edu.ph' });
 		setLoading(false);
-	}, [navigate]);
+	}, [navigate, searchParams]);
 
 	const toggleMenu = (menuKey) => {
 		setExpandedMenus(prev => ({ ...prev, [menuKey]: !prev[menuKey] }));
@@ -38,6 +47,12 @@ const AdminDashboard = () => {
 
 	const setActiveMenu = (submenu) => {
 		setActiveSubmenu(submenu);
+		// Update URL query parameter when Inventory is selected
+		if (submenu === 'inventory') {
+			setSearchParams({ Inventory: '' });
+		} else {
+			setSearchParams({});
+		}
 	};
 
 	const handleLogout = () => {
@@ -60,6 +75,7 @@ const AdminDashboard = () => {
 			submenus: [
 				{ key: 'analytics', name: 'Analytics' },
 				{ key: 'borrowers-request', name: 'Borrowers Request' },
+				{ key: 'borrowed-item', name: 'Borrowed Item' },
 				{ key: 'inventory', name: 'Inventory' },
 				{ key: 'calendar', name: 'Calendar' }
 			]
@@ -105,8 +121,10 @@ const AdminDashboard = () => {
 				return <AnalyticsDashboard />;
 			case 'borrowers-request':
 				return <BorrowersRequestDashboard />;
+			case 'borrowed-item':
+				return <BorrowedItemDashboard />;
 			case 'inventory':
-				return <InventoryDashboard />;
+				return <Inventory />;
 			case 'calendar':
 				return <CalendarDashboard />;
 			default:

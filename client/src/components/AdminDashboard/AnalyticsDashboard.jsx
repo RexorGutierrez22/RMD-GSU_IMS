@@ -1,36 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { dashboardApi } from '../../services/api';
 
 const AnalyticsDashboard = () => {
 	const [animatedStats, setAnimatedStats] = useState({
 		students: 0, employees: 0, borrowed: 0, lowStock: 0, available: 0, total: 0
 	});
 	
+	const [realStats, setRealStats] = useState({
+		students: 150, employees: 45, borrowed: 25, lowStock: 8, available: 295, total: 320
+	});
+	
+	const [loading, setLoading] = useState(true);
 	const [activeTimeRange, setActiveTimeRange] = useState('monthly');
 
+	// Fetch real data from database
 	useEffect(() => {
-		const finalStats = { students: 150, employees: 45, borrowed: 25, lowStock: 8, available: 295, total: 320 };
-		const duration = 2000, steps = 60, increment = duration / steps;
-		let step = 0;
-		const timer = setInterval(() => {
-			step++;
-			const progress = step / steps;
-			const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-			setAnimatedStats({
-				students: Math.round(finalStats.students * easeOutQuart),
-				employees: Math.round(finalStats.employees * easeOutQuart),
-				borrowed: Math.round(finalStats.borrowed * easeOutQuart),
-				lowStock: Math.round(finalStats.lowStock * easeOutQuart),
-				available: Math.round(finalStats.available * easeOutQuart),
-				total: Math.round(finalStats.total * easeOutQuart)
-			});
-			if (step >= steps) {
-				clearInterval(timer);
-				setAnimatedStats(finalStats);
+		const fetchStats = async () => {
+			try {
+				setLoading(true);
+				const response = await dashboardApi.getStats();
+				const data = response.data;
+				
+				// Calculate available items (total - borrowed) - using mock data for inventory until implemented
+				const availableItems = data.totalItems - 25; // 25 is mock borrowed items
+				
+				setRealStats({
+					students: data.totalStudents,
+					employees: data.totalEmployees,
+					borrowed: 25, // Mock data until borrowing system is implemented
+					lowStock: 8, // Mock data until inventory system is implemented
+					available: availableItems,
+					total: data.totalItems
+				});
+				
+			} catch (error) {
+				console.error('Failed to fetch dashboard stats:', error);
+				// Keep default mock values if API fails
+			} finally {
+				setLoading(false);
 			}
-		}, increment);
-		return () => clearInterval(timer);
+		};
+
+		fetchStats();
 	}, []);
+
+	// Animation effect - now uses real data
+	useEffect(() => {
+		if (!loading) {
+			const finalStats = realStats;
+			const duration = 2000, steps = 60, increment = duration / steps;
+			let step = 0;
+			const timer = setInterval(() => {
+				step++;
+				const progress = step / steps;
+				const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+				setAnimatedStats({
+					students: Math.round(finalStats.students * easeOutQuart),
+					employees: Math.round(finalStats.employees * easeOutQuart),
+					borrowed: Math.round(finalStats.borrowed * easeOutQuart),
+					lowStock: Math.round(finalStats.lowStock * easeOutQuart),
+					available: Math.round(finalStats.available * easeOutQuart),
+					total: Math.round(finalStats.total * easeOutQuart)
+				});
+				if (step >= steps) {
+					clearInterval(timer);
+					setAnimatedStats(finalStats);
+				}
+			}, increment);
+			
+			return () => clearInterval(timer);
+		}
+	}, [loading, realStats]);
 
 	const getChartData = () => {
 		switch (activeTimeRange) {
@@ -87,7 +128,13 @@ const AnalyticsDashboard = () => {
 						<div className="flex items-start justify-between">
 							<div className="flex-1">
 								<p className="text-sm font-medium text-gray-600 mb-1">{metric.title}</p>
-								<p className="text-2xl font-bold text-gray-900 mb-2">{metric.value.toLocaleString()}</p>
+								<p className="text-2xl font-bold text-gray-900 mb-2">
+									{loading ? (
+										<div className="animate-pulse bg-gray-200 h-8 w-16 rounded"></div>
+									) : (
+										metric.value.toLocaleString()
+									)}
+								</p>
 								<div className="flex items-center space-x-2">
 									<span className={`text-sm font-medium ${metric.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
 										{metric.change}
