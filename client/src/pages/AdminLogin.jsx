@@ -19,6 +19,19 @@ const AdminLogin = () => {
 		setLoading(true);
 		setError('');
 		
+<<<<<<< HEAD
+=======
+		// Check for default admin credentials first
+		if (form.username === 'admin' && form.password === 'password') {
+			// Generate a temporary token for default admin
+			const defaultToken = 'default_admin_token_' + Date.now();
+			localStorage.setItem('admin_token', defaultToken);
+			navigate('/dashboard');
+			setLoading(false);
+			return;
+		}
+		
+>>>>>>> 3cd2cb345e882a5f66dbbc779dd1ea9e0fbb0243
 		try {
 			const { data } = await axios.post('http://127.0.0.1:8001/api/admin/login', {
 				username: form.username, // Can be username or email
@@ -27,9 +40,12 @@ const AdminLogin = () => {
 			
 			// Store token and admin data
 			localStorage.setItem('admin_token', data.token);
+<<<<<<< HEAD
 			localStorage.setItem('admin_user', JSON.stringify(data.admin));
 			
 			// Redirect to admin dashboard
+=======
+>>>>>>> 3cd2cb345e882a5f66dbbc779dd1ea9e0fbb0243
 			navigate('/dashboard');
 		} catch (err) {
 			if (err.response?.data?.message) {

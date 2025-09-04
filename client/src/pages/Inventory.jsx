@@ -407,13 +407,19 @@ const Inventory = ({ standalone = false }) => {
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
+<<<<<<< HEAD
               <option value={15}>15</option>
+=======
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+>>>>>>> 3cd2cb345e882a5f66dbbc779dd1ea9e0fbb0243
             </select>
           </div>
         </div>
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+<<<<<<< HEAD
           <div className="relative">
             {/* Absolutely Fixed Header */}
             <div className="absolute top-0 left-0 right-0 z-30 bg-gray-50 border-b shadow-sm">
@@ -570,6 +576,150 @@ const Inventory = ({ standalone = false }) => {
             </button>
           </div>
         </div>
+=======
+          <div className="overflow-x-auto">
+            <div className="max-h-96 overflow-y-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b sticky top-0 z-10">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Item ID</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Item Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Specification</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Size</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Color</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Quantity</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Location</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Category</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                {currentItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.id}</td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{item.itemName}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{item.specification}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{item.size}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{item.color}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{item.quantity} {item.unit}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{item.location}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{item.category}</td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-700">
+                Showing {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredInventory.length)} of {filteredInventory.length} items
+              </div>
+              <div className="text-sm text-gray-500">
+                Page {currentPage} of {totalPages}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-sm"
+              >
+                First
+              </button>
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              {/* Page Numbers */}
+              {(() => {
+                const pageNumbers = [];
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+                
+                for (let i = startPage; i <= endPage; i++) {
+                  pageNumbers.push(
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i)}
+                      className={`px-3 py-1 border rounded-lg text-sm ${
+                        currentPage === i
+                          ? 'bg-red-700 text-white border-red-700'
+                          : 'border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {i}
+                    </button>
+                  );
+                }
+                return pageNumbers;
+              })()}
+              
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-sm"
+              >
+                Last
+              </button>
+            </div>
+          </div>
+        )}
+>>>>>>> 3cd2cb345e882a5f66dbbc779dd1ea9e0fbb0243
       </div>
 
       {/* Modal for Add/Edit */}
