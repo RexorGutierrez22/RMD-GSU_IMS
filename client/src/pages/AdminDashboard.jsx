@@ -20,7 +20,10 @@ const AdminDashboard = () => {
 
 	useEffect(() => {
 		const token = localStorage.getItem('admin_token');
+		const adminUser = localStorage.getItem('admin_user');
+		
 		if (!token) {
+			console.log('No admin token found, redirecting to login');
 			navigate('/admin');
 			return;
 		}
@@ -36,8 +39,19 @@ const AdminDashboard = () => {
 			setActiveSubmenu('inventory');
 		}
 
-		// Validate token and load user data
-		setUser({ name: 'Admin User', email: 'admin@rmd.usep.edu.ph' });
+		// Load user data from localStorage or set default
+		try {
+			if (adminUser) {
+				const userData = JSON.parse(adminUser);
+				setUser(userData);
+			} else {
+				setUser({ name: 'Super Admin', email: 'admin@rmd.usep.edu.ph' });
+			}
+		} catch (err) {
+			console.error('Error parsing admin user data:', err);
+			setUser({ name: 'Super Admin', email: 'admin@rmd.usep.edu.ph' });
+		}
+		
 		setLoading(false);
 	}, [navigate, searchParams]);
 

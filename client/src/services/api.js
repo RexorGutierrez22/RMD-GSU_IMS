@@ -12,7 +12,7 @@ const api = axios.create({
 // Add a request interceptor for handling tokens if needed
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token') || localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -29,8 +29,9 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             // Handle unauthorized access
+            localStorage.removeItem('admin_token');
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            window.location.href = '/admin';
         }
         return Promise.reject(error);
     }
@@ -38,8 +39,18 @@ api.interceptors.response.use(
 
 // Dashboard API endpoints
 export const dashboardApi = {
-    getStats: () => api.get('/test-dashboard/stats'),
-    getActivity: () => api.get('/test-dashboard/activity')
+    getStats: () => api.get('/dashboard/stats'),
+    getStudentsCount: () => api.get('/dashboard/students-count'),
+    getEmployeesCount: () => api.get('/dashboard/employees-count'),
+    getInventoryStats: () => api.get('/dashboard/inventory-stats'),
+    getActivity: () => api.get('/dashboard/activity')
+};
+
+// Admin API endpoints
+export const adminApi = {
+    login: (credentials) => api.post('/admin/login', credentials),
+    validateToken: () => api.get('/admin/validate-token'),
+    logout: () => api.post('/admin/logout')
 };
 
 export default api;

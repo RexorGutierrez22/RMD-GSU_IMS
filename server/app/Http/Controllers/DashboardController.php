@@ -14,7 +14,7 @@ class DashboardController extends Controller
         try {
             $totalStudents = Student::count();
             $totalEmployees = Employee::count();
-            
+
             // For now, using mock data for inventory items and pending requests
             // These can be updated when inventory and borrowing models are created
             $totalItems = 320; // This would come from Inventory model
@@ -77,6 +77,62 @@ class DashboardController extends Controller
             return response()->json([
                 'error' => 'Failed to fetch recent activity',
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getStudentsCount()
+    {
+        try {
+            $count = Student::count();
+            return response()->json([
+                'count' => $count,
+                'total' => $count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch students count',
+                'message' => $e->getMessage(),
+                'count' => 0
+            ], 500);
+        }
+    }
+
+    public function getEmployeesCount()
+    {
+        try {
+            $count = Employee::count();
+            return response()->json([
+                'count' => $count,
+                'total' => $count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch employees count',
+                'message' => $e->getMessage(),
+                'count' => 0
+            ], 500);
+        }
+    }
+
+    public function getInventoryStats()
+    {
+        try {
+            // Mock data for now - replace with actual inventory model when implemented
+            return response()->json([
+                'total_items' => 320,
+                'borrowed_items' => 25,
+                'low_stock_items' => 8,
+                'available_items' => 295
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch inventory stats',
+                'message' => $e->getMessage(),
+                'total_items' => 0,
+                'borrowed_items' => 0,
+                'low_stock_items' => 0,
+                'available_items' => 0
             ], 500);
         }
     }

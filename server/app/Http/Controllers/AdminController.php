@@ -157,7 +157,7 @@ class AdminController extends Controller
         $request->validate($rules);
 
         $updateData = $request->only(['full_name', 'email', 'username']);
-        
+
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
         }
@@ -181,7 +181,7 @@ class AdminController extends Controller
     public function destroy($id)
     {
         $admin = Admin::findOrFail($id);
-        
+
         // Prevent deleting the last admin
         if (Admin::count() <= 1) {
             return response()->json([

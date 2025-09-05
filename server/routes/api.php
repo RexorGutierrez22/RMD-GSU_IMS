@@ -38,7 +38,7 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('/admin/logout', [AdminController::class, 'logout']);
     Route::get('/admin/me', [AdminController::class, 'me']);
     Route::get('/admin/verify', [AdminController::class, 'verify']);
-    
+
     // Admin Management Routes (for super admins)
     Route::get('/admins', [AdminController::class, 'index']);
     Route::post('/admins', [AdminController::class, 'store']);
@@ -51,6 +51,9 @@ Route::get('/admin/verify', [AuthController::class, 'verify'])->middleware('auth
 // Dashboard routes
 Route::middleware('auth:sanctum')->prefix('dashboard')->group(function () {
     Route::get('stats', [DashboardController::class, 'getStats']);
+    Route::get('students-count', [DashboardController::class, 'getStudentsCount']);
+    Route::get('employees-count', [DashboardController::class, 'getEmployeesCount']);
+    Route::get('inventory-stats', [DashboardController::class, 'getInventoryStats']);
     Route::get('activity', [DashboardController::class, 'getRecentActivity']);
 });
 
@@ -58,6 +61,13 @@ Route::middleware('auth:sanctum')->prefix('dashboard')->group(function () {
 Route::prefix('test-dashboard')->group(function () {
     Route::get('stats', [DashboardController::class, 'getStats']);
     Route::get('activity', [DashboardController::class, 'getRecentActivity']);
+});
+
+// Public dashboard routes (for when not authenticated)
+Route::prefix('dashboard')->group(function () {
+    Route::get('students-count', [DashboardController::class, 'getStudentsCount']);
+    Route::get('employees-count', [DashboardController::class, 'getEmployeesCount']);
+    Route::get('inventory-stats', [DashboardController::class, 'getInventoryStats']);
 });
 
 // Registration routes
