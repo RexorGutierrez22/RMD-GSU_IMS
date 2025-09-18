@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete System Test & Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .button-success { background: #28a745; }
+        .button-warning { background: #ffc107; color: black; }
+        .button-danger { background: #dc3545; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        h1, h2, h3 { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 RMD-GSU IMS - Complete System Test & Fix</h1>
+
+        <div class="section info">
+            <h2>📋 System Status</h2>
+            <div id="system-status">Checking system status...</div>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h3>🔐 Authentication Test</h3>
+                <button onclick="testAuth('RMD_Staff', 'rmd@admin')" class="button-success">Test RMD_Staff</button>
+                <button onclick="testAuth('Rexor22', 'rmd@admin')" class="button-success">Test Rexor22</button>
+                <button onclick="testAuth('admin', 'admin123')" class="button-warning">Test Dummy</button>
+                <div id="auth-result"></div>
+            </div>
+
+            <div class="section">
+                <h3>📊 Dashboard Analytics Test</h3>
+                <button onclick="testDashboard()" class="button-success">Test Dashboard Stats</button>
+                <button onclick="testStudentCount()" class="button-success">Test Student Count</button>
+                <button onclick="testEmployeeCount()" class="button-success">Test Employee Count</button>
+                <div id="dashboard-result"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Quick Fixes</h3>
+            <button onclick="fixCORS()" class="button-warning">Fix CORS Issues</button>
+            <button onclick="testAPIHealth()" class="button-success">Test API Health</button>
+            <button onclick="showDatabaseInfo()" class="button-success">Check Database</button>
+            <div id="fix-result"></div>
+        </div>
+
+        <div class="section">
+            <h3>📝 System Logs</h3>
+            <div id="logs"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001/api';
+
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logsDiv.innerHTML = `<div class="${type}">[${timestamp}] ${message}</div>` + logsDiv.innerHTML;
+        }
+
+        async function checkSystemStatus() {
+            const statusDiv = document.getElementById('system-status');
+            statusDiv.innerHTML = 'Checking Laravel server...';
+
+            try {
+                const response = await fetch(`${API_BASE}/test`);
+                if (response.ok) {
+                    statusDiv.innerHTML = '✅ Laravel server is running on port 8001';
+                    statusDiv.className = 'success';
+                    return true;
+                } else {
+                    statusDiv.innerHTML = '⚠️ Laravel server responding but with errors';
+                    statusDiv.className = 'warning';
+                    return false;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Laravel server not accessible. Please start: php artisan serve --port=8001';
+                statusDiv.className = 'error';
+                return false;
+            }
+        }
+
+        async function testAuth(username, password) {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = `Testing ${username}...`;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    mode: 'cors',
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Authentication Success!<br>
+                            <strong>User:</strong> ${data.admin.full_name}<br>
+                            <strong>Email:</strong> ${data.admin.email}<br>
+                            <strong>Token:</strong> ${data.token.substring(0, 20)}...
+                        </div>`;
+                    log(`Authentication successful for ${username}`, 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Authentication Failed<br>
+                            <strong>Error:</strong> ${data.message || 'Unknown error'}
+                        </div>`;
+                    log(`Authentication failed for ${username}: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Network Error: ${error.message}<br>
+                        Make sure Laravel server is running on port 8001
+                    </div>`;
+                log(`Network error during authentication: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDashboard() {
+            const resultDiv = document.getElementById('dashboard-result');
+            resultDiv.innerHTML = 'Testing dashboard stats...';
+
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/stats`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Dashboard Stats Working!<br>
+                            <strong>Students:</strong> ${data.totalStudents}<br>
+                            <strong>Employees:</strong> ${data.totalEmployees}<br>
+                            <strong>Items:</strong> ${data.totalItems}<br>
+                            <strong>Pending:</strong> ${data.pendingRequests}
+                        </div>`;
+                    log(`Dashboard stats loaded: Students: ${data.totalStudents}, Employees: ${data.totalEmployees}`, 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Dashboard Error: ${data.message || 'Unknown error'}
+                        </div>`;
+                    log(`Dashboard error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Network Error: ${error.message}
+                    </div>`;
+                log(`Dashboard network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testStudentCount() {
+            try {
+                const response = await fetch(`${API_BASE}/students`);
+                const data = await response.json();
+                log(`Student count: ${data.data ? data.data.length : 'Error loading students'}`, 'info');
+            } catch (error) {
+                log(`Student count error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEmployeeCount() {
+            try {
+                const response = await fetch(`${API_BASE}/employees`);
+                const data = await response.json();
+                log(`Employee count: ${data.data ? data.data.length : 'Error loading employees'}`, 'info');
+            } catch (error) {
+                log(`Employee count error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAPIHealth() {
+            const resultDiv = document.getElementById('fix-result');
+            resultDiv.innerHTML = 'Testing API health...';
+
+            const endpoints = [
+                { name: 'Test Route', url: `${API_BASE}/test` },
+                { name: 'Dashboard Stats', url: `${API_BASE}/dashboard/stats` },
+                { name: 'Students', url: `${API_BASE}/students` },
+                { name: 'Employees', url: `${API_BASE}/employees` }
+            ];
+
+            let results = '<h4>API Health Check:</h4>';
+
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint.url);
+                    const status = response.ok ? '✅' : '❌';
+                    results += `<div>${status} ${endpoint.name}: ${response.status}</div>`;
+                } catch (error) {
+                    results += `<div>❌ ${endpoint.name}: Network Error</div>`;
+                }
+            }
+
+            resultDiv.innerHTML = results;
+        }
+
+        function fixCORS() {
+            const resultDiv = document.getElementById('fix-result');
+            resultDiv.innerHTML = `
+                <div class="info">
+                    <h4>CORS Fix Instructions:</h4>
+                    <p>1. Make sure Laravel server is running: <code>php artisan serve --port=8001</code></p>
+                    <p>2. Check CORS config in <code>config/cors.php</code></p>
+                    <p>3. Restart React dev server if needed</p>
+                    <p>4. Clear browser cache and try again</p>
+                </div>`;
+        }
+
+        function showDatabaseInfo() {
+            const resultDiv = document.getElementById('fix-result');
+            resultDiv.innerHTML = `
+                <div class="info">
+                    <h4>Database Commands:</h4>
+                    <p><strong>Reset & Seed:</strong> <code>php artisan migrate:fresh --seed</code></p>
+                    <p><strong>Seed Admins:</strong> <code>php artisan db:seed --class=AdminSeeder</code></p>
+                    <p><strong>Check Tables:</strong> <code>php artisan tinker</code> then <code>App\\Models\\Admin::count()</code></p>
+                </div>`;
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            checkSystemStatus();
+            log('System diagnostic page loaded', 'info');
+        });
+    </script>
+</body>
+</html>

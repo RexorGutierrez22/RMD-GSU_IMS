@@ -1,0 +1,22 @@
+{
+  "name": "rmd-inventory-system",
+  "version": "1.0.0",
+  "description": "RMD GSU Inventory Management System",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "client": "cd client && npm run dev",
+    "server": "cd server && php artisan serve --port=8001",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm run build",
+    "start": "cd server && php artisan serve --port=8001"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

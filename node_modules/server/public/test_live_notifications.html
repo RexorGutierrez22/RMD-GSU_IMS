@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Notification Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px; }
+        .form-group { margin: 10px 0; }
+        label { display: inline-block; width: 150px; font-weight: bold; }
+        .notification { padding: 5px 10px; margin: 5px 0; border-radius: 4px; font-size: 12px; }
+        .notification.exists { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .notification.available { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .notification.checking { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Live Notification Test</h1>
+        <p>Type in the fields below to see real-time duplicate checking notifications!</p>
+
+        <div class="section">
+            <h3>👨‍🎓 Student Live Check</h3>
+            <div class="form-group">
+                <label>Student ID:</label>
+                <input type="text" id="student-id" placeholder="Enter Student ID" onkeyup="checkStudentUniqueness()" />
+                <div id="student-id-status"></div>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="student-email" placeholder="Enter Email" onkeyup="checkStudentUniqueness()" />
+                <div id="student-email-status"></div>
+            </div>
+            <div class="form-group">
+                <label>Contact:</label>
+                <input type="text" id="student-contact" placeholder="Enter Contact" onkeyup="checkStudentUniqueness()" />
+                <div id="student-contact-status"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🏢 Employee Live Check</h3>
+            <div class="form-group">
+                <label>Employee ID:</label>
+                <input type="text" id="employee-id" placeholder="Enter Employee ID" onkeyup="checkEmployeeUniqueness()" />
+                <div id="employee-id-status"></div>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="employee-email" placeholder="Enter Email" onkeyup="checkEmployeeUniqueness()" />
+                <div id="employee-email-status"></div>
+            </div>
+            <div class="form-group">
+                <label>Contact:</label>
+                <input type="text" id="employee-contact" placeholder="Enter Contact" onkeyup="checkEmployeeUniqueness()" />
+                <div id="employee-contact-status"></div>
+            </div>
+        </div>
+
+        <div class="section info">
+            <h4>Instructions:</h4>
+            <ul>
+                <li>Type in any field above to trigger live checking</li>
+                <li>Green notifications = Available</li>
+                <li>Red notifications = Already exists in database</li>
+                <li>Yellow notifications = Checking...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001/api';
+        let studentTimeout, employeeTimeout;
+
+        function showNotification(element, message, type) {
+            element.innerHTML = `<div class="notification ${type}">${message}</div>`;
+        }
+
+        function checkStudentUniqueness() {
+            clearTimeout(studentTimeout);
+
+            const studentId = document.getElementById('student-id').value.trim();
+            const email = document.getElementById('student-email').value.trim();
+            const contact = document.getElementById('student-contact').value.trim();
+
+            // Clear previous notifications if fields are empty
+            if (!studentId && !email && !contact) {
+                document.getElementById('student-id-status').innerHTML = '';
+                document.getElementById('student-email-status').innerHTML = '';
+                document.getElementById('student-contact-status').innerHTML = '';
+                return;
+            }
+
+            // Show checking status
+            if (studentId) showNotification(document.getElementById('student-id-status'), 'Checking...', 'checking');
+            if (email) showNotification(document.getElementById('student-email-status'), 'Checking...', 'checking');
+            if (contact) showNotification(document.getElementById('student-contact-status'), 'Checking...', 'checking');
+
+            studentTimeout = setTimeout(async () => {
+                try {
+                    const payload = {};
+                    if (studentId) payload.studentId = studentId;
+                    if (email) payload.email = email;
+                    if (contact) payload.contact = contact;
+
+                    const response = await fetch(`${API_BASE}/check-student-uniqueness`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    // Update notifications based on results
+                    if (studentId) {
+                        const message = data.studentIdExists ? '❌ Student ID already exists!' : '✅ Student ID available';
+                        const type = data.studentIdExists ? 'exists' : 'available';
+                        showNotification(document.getElementById('student-id-status'), message, type);
+                    }
+
+                    if (email) {
+                        const message = data.emailExists ? '❌ Email already exists!' : '✅ Email available';
+                        const type = data.emailExists ? 'exists' : 'available';
+                        showNotification(document.getElementById('student-email-status'), message, type);
+                    }
+
+                    if (contact) {
+                        const message = data.contactExists ? '❌ Contact already exists!' : '✅ Contact available';
+                        const type = data.contactExists ? 'exists' : 'available';
+                        showNotification(document.getElementById('student-contact-status'), message, type);
+                    }
+
+                } catch (error) {
+                    console.error('Student uniqueness check error:', error);
+                    showNotification(document.getElementById('student-id-status'), '⚠️ Error checking uniqueness', 'warning');
+                }
+            }, 500);
+        }
+
+        function checkEmployeeUniqueness() {
+            clearTimeout(employeeTimeout);
+
+            const empId = document.getElementById('employee-id').value.trim();
+            const email = document.getElementById('employee-email').value.trim();
+            const contact = document.getElementById('employee-contact').value.trim();
+
+            // Clear previous notifications if fields are empty
+            if (!empId && !email && !contact) {
+                document.getElementById('employee-id-status').innerHTML = '';
+                document.getElementById('employee-email-status').innerHTML = '';
+                document.getElementById('employee-contact-status').innerHTML = '';
+                return;
+            }
+
+            // Show checking status
+            if (empId) showNotification(document.getElementById('employee-id-status'), 'Checking...', 'checking');
+            if (email) showNotification(document.getElementById('employee-email-status'), 'Checking...', 'checking');
+            if (contact) showNotification(document.getElementById('employee-contact-status'), 'Checking...', 'checking');
+
+            employeeTimeout = setTimeout(async () => {
+                try {
+                    const payload = {};
+                    if (empId) payload.emp_id = empId;
+                    if (email) payload.email = email;
+                    if (contact) payload.contact = contact;
+
+                    const response = await fetch(`${API_BASE}/check-employee-uniqueness`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    // Update notifications based on results
+                    if (empId) {
+                        const message = data.empIdExists ? '❌ Employee ID already exists!' : '✅ Employee ID available';
+                        const type = data.empIdExists ? 'exists' : 'available';
+                        showNotification(document.getElementById('employee-id-status'), message, type);
+                    }
+
+                    if (email) {
+                        const message = data.emailExists ? '❌ Email already exists!' : '✅ Email available';
+                        const type = data.emailExists ? 'exists' : 'available';
+                        showNotification(document.getElementById('employee-email-status'), message, type);
+                    }
+
+                    if (contact) {
+                        const message = data.contactExists ? '❌ Contact already exists!' : '✅ Contact available';
+                        const type = data.contactExists ? 'exists' : 'available';
+                        showNotification(document.getElementById('employee-contact-status'), message, type);
+                    }
+
+                } catch (error) {
+                    console.error('Employee uniqueness check error:', error);
+                    showNotification(document.getElementById('employee-id-status'), '⚠️ Error checking uniqueness', 'warning');
+                }
+            }, 500);
+        }
+    </script>
+</body>
+</html>

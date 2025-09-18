@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Auth Test</title>
+</head>
+<body>
+    <h1>Admin Authentication Test</h1>
+    <div id="result"></div>
+
+    <script>
+        async function testAuth() {
+            try {
+                console.log('Testing authentication...');
+
+                const response = await fetch('http://localhost:8001/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'RMD_Staff',
+                        password: 'rmd@admin'
+                    })
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                document.getElementById('result').innerHTML =
+                    '<h2>Result:</h2>' +
+                    '<p>Status: ' + response.status + '</p>' +
+                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML =
+                    '<h2>Error:</h2>' +
+                    '<p>' + error.message + '</p>';
+            }
+        }
+
+        // Test authentication when page loads
+        testAuth();
+    </script>
+</body>
+</html>

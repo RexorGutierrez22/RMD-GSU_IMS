@@ -1,0 +1,17 @@
+# Allow access to QR code files
+<Files "*.svg">
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Origin, Content-Type, Accept, Authorization, X-Request-With"
+    Header always set Content-Type "image/svg+xml"
+</Files>
+
+<Files "*.png">
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Origin, Content-Type, Accept, Authorization, X-Request-With"
+    Header always set Content-Type "image/png"
+</Files>
+
+# Enable file serving
+Options +Indexes
